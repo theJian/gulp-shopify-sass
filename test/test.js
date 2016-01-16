@@ -44,7 +44,7 @@ describe('gulp-shopify-sass', function () {
       test('@import "a.scss";')
         .pipe(gulpShopifySass())
         .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name{}')}))
+        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}')}))
         .pipe(assert.end(done));
     });
 
