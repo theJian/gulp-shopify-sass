@@ -41,7 +41,8 @@ describe('gulp-shopify-sass', function () {
     // });
     
     it('replace import', function (done) {
-      test('@import "a.scss";')
+      gulp.src('./test/fixtures/b.scss')
+      // test('@import "a.scss";')
         .pipe(gulpShopifySass())
         .pipe(assert.length(1))
         .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}')}))

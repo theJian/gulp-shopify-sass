@@ -5,6 +5,7 @@ var path = require('path');
 var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 var vfile = require('vinyl-file');
+var vinyl = require('vinyl');
 var fileExists = require('file-exists');
 
 const PLUGIN_NAME = 'gulp-shopify-sass';
@@ -13,7 +14,7 @@ function importReplacer (file) {
 
   var rex = /@import\s*(("([^"]+)")|('([^']+)'))\s*;/g;
   var fileContents = file.contents.toString();
-  var fileDirname = file.dirname;
+  var fileDirname = file.base;
   var imports = {};
   var match;
 
