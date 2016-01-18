@@ -14,10 +14,9 @@ function importReplacer (file) {
 
   var rex = /@import\s*(("([^"]+)")|('([^']+)'))\s*;/g;
   var fileContents = file.contents.toString();
-  var fileDirname = file.base;
+  var fileDirname = path.dirname(file.path);
   var imports = {};
   var match;
-
   while(match = rex.exec(fileContents)) {
 
     // [3] double quotes
@@ -36,7 +35,7 @@ function importReplacer (file) {
 
   for(let imp in imports) {
     // replace @import with import file contents
-    fileContents = fileContents.replace(imp, importReplacer(vfile.readSync(importFile)).contents.toString());
+    fileContents = fileContents.replace(imp, importReplacer(vfile.readSync(imports[imp])).contents.toString());
   }
 
   file.contents = new Buffer(fileContents);
