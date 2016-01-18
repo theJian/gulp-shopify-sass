@@ -1,6 +1,6 @@
 {
   "name": "gulp-shopify-sass",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Concatenate Sass files defined by the @import order",
   "main": "./index.js",
   "scripts": {
