@@ -56,6 +56,14 @@ describe('gulp-shopify-sass', function () {
        .pipe(assert.end(done));
     });
 
+    it('replace multiple import', function (done) {
+      gulp.src('./test/fixtures/d.scss')
+        .pipe(gulpShopifySass())
+        .pipe(assert.length(1))
+        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}')}))
+        .pipe(assert.end(done));
+    });
+
   });
 
 });

@@ -35,7 +35,7 @@ function importReplacer (file) {
 
   for(let imp in imports) {
     // replace @import with import file contents
-    fileContents = fileContents.replace(imp, importReplacer(vfile.readSync(imports[imp])).contents.toString());
+    fileContents = fileContents.replace(new RegExp(imp, 'g'), importReplacer(vfile.readSync(imports[imp])).contents.toString());
   }
 
   file.contents = new Buffer(fileContents);
