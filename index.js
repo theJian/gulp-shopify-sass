@@ -10,6 +10,44 @@ var fileExists = require('file-exists');
 
 const PLUGIN_NAME = 'gulp-shopify-sass';
 
+function addUnderscore(fileName) {
+  const index = fileName.lastIndexOf("/") + 1;
+
+  var start = fileName.substring(0, index);
+  var end = fileName.substring(index, fileName.length);
+
+  return start + '_' + end;
+}
+
+
+function checkFileExists(fileName) {
+  // if .scss is not specified at the end
+  const withExtension = fileName + '.scss';
+
+  // if the file name is missing the partial '_'
+  const withUnderscore = addUnderscore(fileName);
+
+  // if the file name is missing both the .scss extension and the partial '_'
+  const withUnderscoreAndExtension = withUnderscore + '.scss';
+
+  if(fileExists(fileName)) {
+    return fileName;
+  }
+
+  if(fileExists(withExtension)) {
+    return withExtension;
+  }
+
+  if(fileExists(withUnderscoreAndExtension)) {
+    return withUnderscoreAndExtension;
+  }
+
+  gutil.log('File to import: "' + fileName + '" not found.');
+
+  return false;
+}
+
+
 function importReplacer (file) {
 
   var rex = /@import\s*(("([^"]+)")|('([^']+)'))\s*;/g;
@@ -17,11 +55,14 @@ function importReplacer (file) {
   var fileDirname = path.dirname(file.path);
   var imports = {};
   var match;
+
   while(match = rex.exec(fileContents)) {
 
     // [3] double quotes
     // [5] single quotes
     var importFile = path.join(fileDirname, (match[3] || match[5]));
+
+    let fileExistCheck = checkFileExists(importFile);
 
     // Skip files doesn't exist
     if (!fileExists(importFile)) {
@@ -29,7 +70,10 @@ function importReplacer (file) {
       continue;
     };
 
-    imports[match[0]] = importFile;
+    // if file exists, replace it
+    if(fileExistCheck) {
+      imports[match[0]] = fileExistCheck;
+    }
 
   }
 
