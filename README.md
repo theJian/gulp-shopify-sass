@@ -6,7 +6,7 @@ This plugin does the same thing but with gulp.
 
 # Installation
 install via npm:
-	
+
 	npm install gulp-shopify-sass --save-dev
 
 
@@ -14,7 +14,7 @@ install via npm:
 
 	var gulp = require('gulp');
 	var gss = require('gulp-shopify-sass');
-	
+
 	gulp.task('default', function() {
 		return gulp.src('./*.scss')
 				.pipe(gss());

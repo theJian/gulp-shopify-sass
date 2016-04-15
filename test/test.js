@@ -39,7 +39,7 @@ describe('gulp-shopify-sass', function () {
     //     .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name{}')}))
     //     .pipe(assert.end(done));
     // });
-    
+
     it('replace import', function (done) {
       gulp.src('./test/fixtures/b.scss')
         .pipe(gulpShopifySass())
@@ -64,6 +64,13 @@ describe('gulp-shopify-sass', function () {
         .pipe(assert.end(done));
     });
 
+    it('replace multiple types of import', function (done) {
+      gulp.src('./test/fixtures/e.scss')
+        .pipe(gulpShopifySass())
+        .pipe(assert.length(1))
+        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}\n.class-name {}\n.class-name {}')}))
+        .pipe(assert.end(done));
+    });
   });
 
 });
