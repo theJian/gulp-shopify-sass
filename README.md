@@ -12,6 +12,16 @@ install via npm:
 
 # Example
 
+To import a file called `_name.scss`, there are four ways to do it.
+
+	@import 'path-to-file/name';
+	@import 'path-to-file/_name';
+	@import 'path-to-file/name.scss';
+	@import 'path-to-file/_name.scss';
+
+All of above will have the same result.
+
+
 	var gulp = require('gulp');
 	var gss = require('gulp-shopify-sass');
 
