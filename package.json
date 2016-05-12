@@ -1,6 +1,6 @@
 {
   "name": "gulp-shopify-sass",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Concatenate Sass files defined by the @import order",
   "main": "./index.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "gulp-util": "^3.0.7",
     "path": "^0.12.7",
     "through2": "^2.0.0",
+    "vinyl": "^1.1.1",
     "vinyl-file": "^2.0.0"
   },
   "devDependencies": {
