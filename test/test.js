@@ -71,6 +71,22 @@ describe('gulp-shopify-sass', function () {
         .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}\n.class-name {}\n.class-name {}')}))
         .pipe(assert.end(done));
     });
+
+    it('replace import .scss.liquid', function (done) {
+      gulp.src('./test/fixtures/f.scss')
+        .pipe(gulpShopifySass())
+        .pipe(assert.length(1))
+        .pipe(assert.first(function(f){f.contents.toString().should.equal('.dash {}\n.dash {}\n.dash {}\n.dash {}')}))
+        .pipe(assert.end(done));
+    });
+
+    it('do not import .scss.liquid if .scss exist', function (done) {
+      gulp.src('./test/fixtures/g.scss')
+        .pipe(gulpShopifySass())
+        .pipe(assert.length(1))
+        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}')}))
+        .pipe(assert.end(done));
+    });
   });
 
 });

@@ -17,9 +17,7 @@
   "author": "theJian<thejianmail@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "file-exists": "^1.0.0",
     "gulp-util": "^3.0.7",
-    "path": "^0.12.7",
     "through2": "^2.0.0",
     "vinyl": "^1.1.1",
     "vinyl-file": "^2.0.0"
