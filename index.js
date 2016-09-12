@@ -17,7 +17,7 @@ function checkFileExist (dir) {
     fs.accessSync(dir , fs.F_OK);
     return true;
   } catch (e) {
-    return false
+    return false;
   }
 }
 
@@ -41,7 +41,7 @@ function analyseDir (dir) {
   // [4] filename if it doesn't have extension, otherwise undefined
   let filenameFrags = filenameReg.exec(filename);
 
-  // move filename[4] to filename[2] is filename[2] is undefined
+  // move filename[4] to filename[2] if filename[2] is undefined
   filenameFrags[2] = filenameFrags[2] || filenameFrags[4];
 
   // remove original name, all index will reduce 1
