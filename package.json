@@ -25,6 +25,7 @@
   "devDependencies": {
     "event-stream": "^3.3.2",
     "gulp": "^3.9.0",
+    "lodash.clonedeep": "^4.5.0",
     "mocha": "^2.3.4",
     "should": "^8.1.1",
     "stream-array": "^1.1.1",
