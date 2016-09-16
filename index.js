@@ -8,13 +8,17 @@ var clonedeep = require('lodash.clonedeep');
 
 const PLUGIN_NAME = 'gulp-shopify-sass';
 
+/*
+ * Most of the code in index.js are copied from gulp-sass
+ */
+
 //////////////////////////////
 // Main Gulp Shopify Sass function
 //////////////////////////////
 var gulpShopifySass = function gulpShopifySass (options, sync) {
   return through.obj(function (file, enc, cb) {
 
-    var opts, catFile;
+    var opts, contents;
 
     if (file.isNull()) {
       return cb(null, file);
@@ -28,8 +32,8 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
     //////////////////////////////
     // Handles returning the file to the stream
     //////////////////////////////
-    filePush = function filePush(catFile) {
-      file.contents = catFile;
+    var filePush = function filePush(contents) {
+      file.contents = contents;
       file.path = gutil.replaceExtension(file.path, '.cat.scss.liquid');
 
       cb(null, file);
@@ -38,7 +42,7 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
     //////////////////////////////
     // Handles error message
     //////////////////////////////
-    errorM = function errorM(error) {
+    var errorM = function errorM(error) {
       var relativePath = '',
           filePath = error.file === 'stdin' ? file.path : error.file,
           message = '';
@@ -72,42 +76,46 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       // we set the file path here so that libsass can correctly resolve import paths
       opts.file = file.path;
 
+      // TODO: add includePaths feature in options and relavent processer
+
       // Ensure file's parent directory in the include path
-      if (opts.includePaths) {
-        if (typeof opts.includePaths === 'string') {
-          opts.includePaths = [opts.includePaths];
-        }
-      } else {
-        opts.includePaths = [];
-      }
+      // if (opts.includePaths) {
+      //   if (typeof opts.includePaths === 'string') {
+      //     opts.includePaths = [opts.includePaths];
+      //   }
+      // } else {
+      //   opts.includePaths = [];
+      // }
 
-      opts.includePaths.unshift(path.dirname(file.path));
+      // opts.includePaths.unshift(path.dirname(file.path));
 
-      if (sync === true) {
+      // TDDO: enable sync option once async render is done. Only support renderSync for now
+      // if (sync === true) {
         //////////////////////////////
         // Sync Sass render
         //////////////////////////////
-        try {
-          catFile = gulpShopifySass.compiler.renderSync(file);
 
-          filePush(catFile);
+        try {
+          contents = gulpShopifySass.compiler.renderSync(opts);
+
+          filePush(contents);
         } catch (error) {
           return errorM(error);
         }
 
-      } else {
-        //////////////////////////////
-        // Async Sass render
-        //////////////////////////////
-        callback = function(error, catFile) {
-          if (error) {
-            return errorM(error);
-          }
-          filePush(catFile);
-        };
+      // } else {
+      //   //////////////////////////////
+      //   // Async Sass render
+      //   //////////////////////////////
+      //   var callback = function(error, catFile) {
+      //     if (error) {
+      //       return errorM(error);
+      //     }
+      //     filePush(catFile);
+      //   };
 
-        gulpShopifySass.compiler.render(opts, callback);  
-      }
+      //   gulpShopifySass.compiler.render(opts, callback);  
+      // }
       //////////////////////////////
       // gulpShopifySass main process END
       //////////////////////////////
@@ -118,9 +126,12 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
 //////////////////////////////
 // Sync Shopify Sass render
 //////////////////////////////
-gulpShopifySass.sync = function sync(options) {
-  return gulpShopifySass(options, true);
-};
+
+// TDDO: enable sync option once async render is done. Only support renderSync for now
+
+// gulpShopifySass.sync = function sync(options) {
+//   return gulpShopifySass(options, true);
+// };
 
 //////////////////////////////
 // Log errors nicely
