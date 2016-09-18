@@ -32,7 +32,7 @@ var gss = require('gulp-shopify-sass');
 gulp.task('default', function() {
 	return gulp.src('./*.scss')
 		.pipe(gss())
-		.pipe(gulp.dist('./path/to/dist'));
+		.pipe(gulp.dest('./path/to/dist'));
 });
 ```
 
