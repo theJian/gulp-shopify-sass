@@ -5,7 +5,6 @@ var gutil     = require('gulp-util');
 var through   = require('through2');
 var clonedeep = require('lodash.clonedeep');
 
-
 const PLUGIN_NAME = 'gulp-shopify-sass';
 
 /*
@@ -26,14 +25,24 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
 
     // do not support stream
     if(file.isStream()) {
-      return cb(new gutil.PluginError(PLUGIN_NAME, 'Streams are not supported!'));
+      return cb(new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported!'));
     }
 
     //////////////////////////////
     // Handles returning the file to the stream
     //////////////////////////////
     var filePush = function filePush(contents) {
-      file.contents = contents;
+    //   console.log(file);
+    //   console.log(file.contents);
+    //   console.log(contents);
+    // file = new gutil.File({
+    //     'cwd': __dirname,
+    //     'base': file.base,
+    //     'path': gutil.replaceExtension(file.path, '.cat.scss.liquid'),
+    //     'contents': contents
+    // });
+
+      file.contents = new Buffer(contents);
       file.path = gutil.replaceExtension(file.path, '.cat.scss.liquid');
 
       cb(null, file);
@@ -55,7 +64,7 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
 
       error.messageFormatted = message;
       error.messageOriginal = error.message;
-      error.message = gutil.colors.stripColor(message);
+      // error.message = gutil.colors.stripColor(message);
 
       error.relativePath = relativePath;
 
