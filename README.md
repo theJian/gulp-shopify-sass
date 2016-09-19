@@ -14,22 +14,27 @@ install via npm:
 
 To import a file called `_name.scss`, there are four ways to do it.
 
-	@import 'path-to-file/name';
-	@import 'path-to-file/_name';
-	@import 'path-to-file/name.scss';
-	@import 'path-to-file/_name.scss';
+```javascript
+@import 'path-to-file/name';
+@import 'path-to-file/_name';
+@import 'path-to-file/name.scss';
+@import 'path-to-file/_name.scss';
+```
 
 All of above will have the same result.
 
+```javascript
+'use strict';
 
-	var gulp = require('gulp');
-	var gss = require('gulp-shopify-sass');
+var gulp = require('gulp');
+var gss = require('gulp-shopify-sass');
 
-	gulp.task('default', function() {
-		return gulp.src('./*.scss')
-				.pipe(gss());
-	});
-
+gulp.task('default', function() {
+	return gulp.src('./*.scss')
+		.pipe(gss())
+		.pipe(gulp.dest('./path/to/dist'));
+});
+```
 
 # License
 MIT license

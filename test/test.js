@@ -2,91 +2,206 @@ var assert = require('stream-assert');
 var should = require('should');
 var File = require('vinyl');
 var gulp = require('gulp');
+var path = require('path');
+var gutil = require('gulp-util');
+var fs = require('fs');
 var gulpShopifySass = require('../index');
-var test = require('./test-stream');
 
-describe('gulp-shopify-sass', function () {
-  describe('in buffer mode', function () {
+var createVinyl = function createVinyl(filename, contents) {
+    var base = path.join(__dirname, 'fixtures', 'scss');
+    var filePath = path.join(base, filename);
+    return new gutil.File({
+        'cwd': __dirname,
+        'base': base,
+        'path': filePath,
+        'contents': contents || fs.readFileSync(filePath)
+    });
+};
 
-    it('skip files doesn\'t exist', function (done) {
-      test('@import "foo.scss";')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('@import "foo.scss";')}))
-        .pipe(assert.end(done));
+describe('gulp-shopify-sass', function() {
+    it('skip files doesn\'t exist', function(done) {
+        var stream = gulpShopifySass();
+        var emptyFile = {
+            'isNull': function() {
+                return true;
+            }
+        };
+
+        stream.on('data', function (data) {
+            data.should.equal(emptyFile);
+            done();
+        });
+
+        stream.write(emptyFile);
     });
 
-    it('work on single sass file', function (done) {
-      test('.class-name{}')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name{}')}))
-        .pipe(assert.end(done));
+    it('should emit error when file isStream()', function(done) {
+        var stream = gulpShopifySass();
+        var streamFile = {
+            'isNull': function() {
+                return false;
+            },
+            'isStream': function() {
+                return true;
+            }
+        };
+
+        stream.on('error', function (err) {
+            err.message.should.equal('Streaming not supported!');
+            done();
+        });
+
+        stream.write(streamFile);
     });
 
-    // it('replace import on single file', function (done) {
-    //   test('@import "file1.scss";', '.class-name{}')
-    //     .pipe(gulpShopifySass())
-    //     .pipe(assert.length(2))
-    //     .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name{}')}))
-    //     .pipe(assert.end(done));
-    // });
+    it('should compile an empty sass file', function(done) {
+        var sassFile = createVinyl('empty.scss');
+        var stream = gulpShopifySass();
 
-    // it('replace import recursively', function (done) {
-    //   test('@import "file1.scss";', '@import "file2.scss";', '.class-name{}')
-    //     .pipe(gulpShopifySass())
-    //     .pipe(assert.length(3))
-    //     .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name{}')}))
-    //     .pipe(assert.end(done));
-    // });
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'empty.cat.scss.liquid');
+            String(catScssFile.contents).should.equal('');
+            done();
+        });
 
-    it('replace import', function (done) {
-      gulp.src('./test/fixtures/b.scss')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}')}))
-        .pipe(assert.end(done));
+        stream.write(sassFile);
     });
 
-    it('replace import recursively', function (done) {
-      gulp.src('./test/fixtures/c.scss')
-       .pipe(gulpShopifySass())
-       .pipe(assert.length(1))
-       .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}')}))
-       .pipe(assert.end(done));
+    it('work on single sass file', function(done) {
+        var sassFile = createVinyl('_single.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), '_single.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'scss', '_single.scss'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
     });
 
-    it('replace multiple import', function (done) {
-      gulp.src('./test/fixtures/d.scss')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}')}))
-        .pipe(assert.end(done));
+    it('should replace import', function(done) {
+        var sassFile = createVinyl('import.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'import.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'scss', '_single.scss'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
     });
 
-    it('replace multiple types of import', function (done) {
-      gulp.src('./test/fixtures/e.scss')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}\n.class-name {}\n.class-name {}')}))
-        .pipe(assert.end(done));
+    it('replace import recursively', function(done) {
+        var sassFile = createVinyl('recursive.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'recursive.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'scss', '_single.scss'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
     });
 
-    it('replace import .scss.liquid', function (done) {
-      gulp.src('./test/fixtures/f.scss')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.dash {}\n.dash {}\n.dash {}\n.dash {}')}))
-        .pipe(assert.end(done));
+    it('replace multiple import', function(done) {
+        var sassFile = createVinyl('multiple.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'multiple.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'expected', 'multiple.cat.scss.liquid'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
     });
 
-    it('do not import .scss.liquid if .scss exist', function (done) {
-      gulp.src('./test/fixtures/g.scss')
-        .pipe(gulpShopifySass())
-        .pipe(assert.length(1))
-        .pipe(assert.first(function(f){f.contents.toString().should.equal('.class-name {}\n.class-name {}')}))
-        .pipe(assert.end(done));
+    it('replace import with different name variations', function(done) {
+        var sassFile = createVinyl('variations.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'variations.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'expected', 'variations.cat.scss.liquid'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
     });
-  });
+
+    it('replace import .scss.liquid', function(done) {
+        var sassFile = createVinyl('import.liquid.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'import.liquid.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'expected', 'import.liquid.cat.scss.liquid'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
+    });
+
+    it('do not import .scss.liquid if .scss exist', function(done) {
+        var sassFile = createVinyl('extensionOverride.scss');
+        var stream = gulpShopifySass();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'extensionOverride.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'expected', 'extentionOverride.cat.scss.liquid'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
+    });
 
 });
