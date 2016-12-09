@@ -85,18 +85,14 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       // we set the file path here so that libsass can correctly resolve import paths
       opts.file = file.path;
 
-      // TODO: add includePaths feature in options and relavent processer
-
       // Ensure file's parent directory in the include path
-      // if (opts.includePaths) {
-      //   if (typeof opts.includePaths === 'string') {
-      //     opts.includePaths = [opts.includePaths];
-      //   }
-      // } else {
-      //   opts.includePaths = [];
-      // }
-
-      // opts.includePaths.unshift(path.dirname(file.path));
+      if (opts.includePaths) {
+        if (typeof opts.includePaths === 'string') {
+          opts.includePaths = [opts.includePaths];
+        }
+      } else {
+        opts.includePaths = [];
+      }
 
       // TDDO: enable sync option once async render is done. Only support renderSync for now
       // if (sync === true) {
