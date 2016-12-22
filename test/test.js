@@ -204,4 +204,22 @@ describe('gulp-shopify-sass', function() {
         stream.write(sassFile);
     });
 
+    it('synchronize render test', function(done) {
+        var sassFile = createVinyl('extensionOverride.scss');
+        var stream = gulpShopifySass.sync();
+
+        stream.on('data', function(catScssFile) {
+            should.exist(catScssFile);
+            should.exist(catScssFile.path);
+            should.exist(catScssFile.relative);
+            should.exist(catScssFile.contents);
+            should.equal(path.basename(catScssFile.path), 'import.liquid.cat.scss.liquid');
+            String(catScssFile.contents).should.equal(
+                fs.readFileSync(path.join(__dirname, 'fixtures', 'expected', 'import.liquid.cat.scss.liquid'), 'utf8')
+            );
+            done();
+        });
+
+        stream.write(sassFile);
+    });
 });

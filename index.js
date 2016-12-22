@@ -98,8 +98,7 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
 
       // opts.includePaths.unshift(path.dirname(file.path));
 
-      // TDDO: enable sync option once async render is done. Only support renderSync for now
-      // if (sync === true) {
+      if (sync === true) {
         //////////////////////////////
         // Sync Sass render
         //////////////////////////////
@@ -112,19 +111,16 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
           return errorM(error);
         }
 
-      // } else {
-      //   //////////////////////////////
-      //   // Async Sass render
-      //   //////////////////////////////
-      //   var callback = function(error, catFile) {
-      //     if (error) {
-      //       return errorM(error);
-      //     }
-      //     filePush(catFile);
-      //   };
+      } else {
+        //////////////////////////////
+        // Async Sass render
+        //////////////////////////////
+        var callback = function(catFile) {
+          filePush(catFile);
+        };
 
-      //   gulpShopifySass.compiler.render(opts, callback);  
-      // }
+        gulpShopifySass.compiler.render(opts, callback, errorM);  
+      }
       //////////////////////////////
       // gulpShopifySass main process END
       //////////////////////////////
@@ -136,11 +132,9 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
 // Sync Shopify Sass render
 //////////////////////////////
 
-// TDDO: enable sync option once async render is done. Only support renderSync for now
-
-// gulpShopifySass.sync = function sync(options) {
-//   return gulpShopifySass(options, true);
-// };
+gulpShopifySass.sync = function sync(options) {
+  return gulpShopifySass(options, true);
+};
 
 //////////////////////////////
 // Log errors nicely
