@@ -69,8 +69,8 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       error.relativePath = relativePath;
 
       return cb(new gutil.PluginError(
-          PLUGIN_NAME, error
-        ));
+        PLUGIN_NAME, error
+      ));
     };
 
     // processing buffer
@@ -85,17 +85,20 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       // we set the file path here so that libsass can correctly resolve import paths
       opts.file = file.path;
 
-      // Ensure file's parent directory in the include path
-      if (opts.includePaths) {
-        if (typeof opts.includePaths === 'string') {
-          opts.includePaths = [opts.includePaths];
-        }
-      } else {
-        opts.includePaths = [];
-      }
+      // TODO: add includePaths feature in options and relavent processer
 
-      // TDDO: enable sync option once async render is done. Only support renderSync for now
-      // if (sync === true) {
+      // Ensure file's parent directory in the include path
+      // if (opts.includePaths) {
+      //   if (typeof opts.includePaths === 'string') {
+      //     opts.includePaths = [opts.includePaths];
+      //   }
+      // } else {
+      //   opts.includePaths = [];
+      // }
+
+      // opts.includePaths.unshift(path.dirname(file.path));
+
+      if (sync === true) {
         //////////////////////////////
         // Sync Sass render
         //////////////////////////////
@@ -108,19 +111,16 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
           return errorM(error);
         }
 
-      // } else {
-      //   //////////////////////////////
-      //   // Async Sass render
-      //   //////////////////////////////
-      //   var callback = function(error, catFile) {
-      //     if (error) {
-      //       return errorM(error);
-      //     }
-      //     filePush(catFile);
-      //   };
+      } else {
+        //////////////////////////////
+        // Async Sass render
+        //////////////////////////////
+        var callback = function(catFile) {
+          filePush(catFile);
+        };
 
-      //   gulpShopifySass.compiler.render(opts, callback);  
-      // }
+        gulpShopifySass.compiler.render(opts, callback, errorM);  
+      }
       //////////////////////////////
       // gulpShopifySass main process END
       //////////////////////////////
@@ -132,11 +132,9 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
 // Sync Shopify Sass render
 //////////////////////////////
 
-// TDDO: enable sync option once async render is done. Only support renderSync for now
-
-// gulpShopifySass.sync = function sync(options) {
-//   return gulpShopifySass(options, true);
-// };
+gulpShopifySass.sync = function sync(options) {
+  return gulpShopifySass(options, true);
+};
 
 //////////////////////////////
 // Log errors nicely
