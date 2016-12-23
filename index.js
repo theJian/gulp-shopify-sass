@@ -88,13 +88,13 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       // TODO: add includePaths feature in options and relavent processer
 
       // Ensure file's parent directory in the include path
-      // if (opts.includePaths) {
-      //   if (typeof opts.includePaths === 'string') {
-      //     opts.includePaths = [opts.includePaths];
-      //   }
-      // } else {
-      //   opts.includePaths = [];
-      // }
+      if (opts.includePaths) {
+        if (typeof opts.includePaths === 'string') {
+          opts.includePaths = [opts.includePaths];
+        }
+      } else {
+        opts.includePaths = [];
+      }
 
       // opts.includePaths.unshift(path.dirname(file.path));
 
