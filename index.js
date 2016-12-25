@@ -85,7 +85,7 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       // we set the file path here so that libsass can correctly resolve import paths
       opts.file = file.path;
 
-      // TODO: add includePaths feature in options and relavent processer
+      // TODO: add relavent processer
 
       // Ensure file's parent directory in the include path
       if (opts.includePaths) {
