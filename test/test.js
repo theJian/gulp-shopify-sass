@@ -205,7 +205,7 @@ describe('gulp-shopify-sass', function() {
     });
 
     it('synchronize render test', function(done) {
-        var sassFile = createVinyl('extensionOverride.scss');
+        var sassFile = createVinyl('import.liquid.scss');
         var stream = gulpShopifySass.sync();
 
         stream.on('data', function(catScssFile) {

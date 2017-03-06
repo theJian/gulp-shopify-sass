@@ -69,8 +69,8 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       error.relativePath = relativePath;
 
       return cb(new gutil.PluginError(
-          PLUGIN_NAME, error
-        ));
+        PLUGIN_NAME, error
+      ));
     };
 
     // processing buffer
@@ -85,16 +85,16 @@ var gulpShopifySass = function gulpShopifySass (options, sync) {
       // we set the file path here so that libsass can correctly resolve import paths
       opts.file = file.path;
 
-      // TODO: add includePaths feature in options and relavent processer
+      // TODO: add relavent processer
 
       // Ensure file's parent directory in the include path
-      // if (opts.includePaths) {
-      //   if (typeof opts.includePaths === 'string') {
-      //     opts.includePaths = [opts.includePaths];
-      //   }
-      // } else {
-      //   opts.includePaths = [];
-      // }
+      if (opts.includePaths) {
+        if (typeof opts.includePaths === 'string') {
+          opts.includePaths = [opts.includePaths];
+        }
+      } else {
+        opts.includePaths = [];
+      }
 
       // opts.includePaths.unshift(path.dirname(file.path));
 
