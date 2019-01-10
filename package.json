@@ -24,7 +24,7 @@
     "vinyl-file": "^2.0.0"
   },
   "devDependencies": {
-    "event-stream": "^3.3.2",
+    "event-stream": "3.3.2",
     "gulp": "^3.9.0",
     "mocha": "^2.3.4",
     "pegjs": "^0.10.0",
